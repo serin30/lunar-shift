@@ -139,6 +139,7 @@ Run the first five yourself with `python test_horizon.py`.
 ## Data sources
 
 - **LOLA south pole elevation map**, `LDEM_80S_80MPP_ADJ.TIF`, 80 m per pixel, from NASA Goddard's Planetary Geodesy Data Archive: https://pgda.gsfc.nasa.gov/products/90
+- **Candidate site coordinates** for site02 (Nobile Rim 1, point NR103: 85.5456° S, 37.5572° E) and site03 (Mons Malapert, point MMA_K2023: 85.9919° S, 2.0564° E), from the landing-site shapefile that accompanies Wueller et al. (2026), *Journal of Geophysical Research: Planets*, https://doi.org/10.1029/2025JE009434 (data: https://doi.org/10.5281/zenodo.17084058, CC BY 4.0). Both lie in NASA's October 2024 Artemis III candidate regions (https://ntrs.nasa.gov/citations/20250011660). Site01 is Connecting Ridge, from NASA's 2022 candidate list.
 - **JPL Horizons**, for the apparent azimuth and elevation of the Sun and Earth from a site on the Moon: https://ssd.jpl.nasa.gov/horizons/
 - **three.js** (MIT licence) for the 3D view.
 
