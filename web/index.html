@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LUNAR//SHIFT</title>
+<meta name="description" content="Enter a mission's requirement and see which lunar south pole landing dates meet it, and how many days of launch delay each one survives.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+KR:wght@400;500;700&family=Unbounded:wght@500;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="hero" id="hero">
+  <canvas id="scene" aria-label="3D view of the real terrain around the landing site, with the Sun and Earth at the selected time"></canvas>
+
+  <div class="hud hud-top">
+    <div class="brand">
+      <div class="logo">LUNAR<span>//</span>SHIFT</div>
+      <div class="tag">When the mission moves, the Moon changes.</div>
+    </div>
+    <div class="controls">
+      <div class="seg" role="group" aria-label="Language">
+        <button data-lang="en" aria-pressed="true">EN</button>
+        <button data-lang="ko" aria-pressed="false" lang="ko">한국어</button>
+      </div>
+      <button class="ghost" id="help">Tour</button>
+      <div class="seg" role="group" aria-label="Point to evaluate" id="point-seg"></div>
+      <div class="seg" role="group" aria-label="Camera">
+        <button id="cam-orbit" aria-pressed="true">Orbit</button>
+        <button id="cam-stand" aria-pressed="false">Stand at the site</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="hud hud-right" id="hud-right">
+    <div class="k">Paint the ground with</div>
+    <div class="seg small wrapseg" role="group" aria-label="Map layer" id="layer-seg">
+      <button data-layer="crew_go" aria-pressed="true">Crew go dates</button>
+      <button data-layer="robot_go" aria-pressed="false">Robot go dates</button>
+      <button data-layer="sun_pct" aria-pressed="false">Sunlight</button>
+      <button data-layer="earth_pct" aria-pressed="false">Earth in view</button>
+      <button data-layer="plain" aria-pressed="false">Nothing</button>
+    </div>
+    <div class="legendbar" id="legend">
+      <div class="bar" id="legend-bar"></div>
+      <div class="ends"><span id="legend-min">0</span><span id="legend-max">—</span></div>
+      <div class="cap" id="legend-cap">—</div>
+    </div>
+    <div class="k">Light</div>
+    <div class="seg small" role="group" aria-label="Lighting">
+      <button id="light-survey" aria-pressed="true">Survey light</button>
+      <button id="light-real" aria-pressed="false">Real Sun</button>
+    </div>
+  </div>
+
+  <div class="hud hud-left">
+    <div class="sitecard">
+      <div class="k">Site</div>
+      <div class="v" id="site-name">—</div>
+      <div class="sub" id="site-coord">—</div>
+    </div>
+    <div class="readout">
+      <div class="row"><span class="dot sun"></span><span class="k">Sun's disc visible</span><span class="v" id="r-sun">—</span></div>
+      <div class="row"><span class="dot earth"></span><span class="k">Earth</span><span class="v" id="r-earth">—</span></div>
+      <div class="row small"><span class="k">Sun centre</span><span class="v" id="r-sunel">—</span></div>
+      <div class="row small"><span class="k">Terrain in that direction</span><span class="v" id="r-terr">—</span></div>
+      <div class="row small"><span class="k">Set by terrain</span><span class="v" id="r-dist">—</span></div>
+      <div class="row small"><span class="k">Sun</span><span class="v" id="r-sunnext">—</span></div>
+      <div class="row small"><span class="k">Earth</span><span class="v" id="r-earthnext">—</span></div>
+    </div>
+  </div>
+
+  <div class="hud hud-note" id="scene-note"></div>
+
+  <div class="caption" id="caption" hidden><span id="caption-text"></span><button id="tour-stop">Skip</button></div>
+
+  <div class="intro" id="intro">
+    <div class="intro-card">
+      <div class="eyebrow" id="intro-eyebrow">NASA Space Apps Challenge 2026 · Lunar Landing Site Navigator</div>
+      <h1 id="intro-h1">Your lander is ready. The launch slips three days. <em>Does the mission still work?</em></h1>
+      <p id="intro-p">At the Moon's south pole the Sun never rises more than 2° above the horizon. One distant ridge can hide it, and your power goes with it. LUNAR//SHIFT uses NASA terrain and JPL positions to show which landing dates still work, and how many days of delay each one survives.</p>
+      <ol id="intro-steps">
+        <li><b>Look.</b> The real ridge, painted with where a crew can land.</li>
+        <li><b>Play.</b> Watch the Sun and Earth circle the skyline through 2027.</li>
+        <li><b>Decide.</b> Set what your mission needs and read the light: go, marginal or no-go.</li>
+      </ol>
+      <div class="intro-actions">
+        <button class="primary" id="tour-start">Show me in 30 seconds</button>
+        <button class="ghost" id="intro-skip">Explore on my own</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="hud hud-bottom">
+    <button id="play" class="play" aria-label="Play">▶</button>
+    <div class="clock">
+      <div class="date" id="clock-date">—</div>
+      <div class="sub">UTC</div>
+    </div>
+    <div class="tl-wrap">
+      <canvas id="timeline" height="54" aria-label="Year timeline. Top band: sunlight. Bottom band: Earth in view. Drag to change the time."></canvas>
+      <div class="tl-legend"><span><i class="sw sun"></i>Sunlight</span><span><i class="sw earth"></i>Earth in view</span><span><i class="sw win"></i>Mission stay</span></div>
+    </div>
+    <div class="seg small" role="group" aria-label="Playback speed">
+      <button data-speed="6" aria-pressed="false">6 h/s</button>
+      <button data-speed="24" aria-pressed="true">1 d/s</button>
+      <button data-speed="120" aria-pressed="false">5 d/s</button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<section class="band verdict-band" id="verdict">
+  <div class="wrap two">
+    <div>
+      <h2>Does the mission still work?</h2>
+      <p class="lead">Set what the mission needs. Pick a landing date. The answer is a light, not a percentage.</p>
+
+      <div class="seg" role="group" aria-label="Mission preset">
+        <button id="preset-crew" aria-pressed="true">Crew, 6 days</button>
+        <button id="preset-robot" aria-pressed="false">Robot, 14 days</button>
+      </div>
+
+      <div class="sliders">
+        <label for="in-stay"><span>Stay on the surface</span><output id="out-stay"></output></label>
+        <input id="in-stay" type="range" min="1" max="30" step="1">
+        <label for="in-dark"><span>Longest dark gap it can survive</span><output id="out-dark"></output></label>
+        <input id="in-dark" type="range" min="0" max="120" step="2">
+        <label for="in-earth"><span>Earth contact needed each day</span><output id="out-earth"></output></label>
+        <input id="in-earth" type="range" min="0" max="24" step="1">
+      </div>
+    </div>
+
+    <div class="verdict-card" id="verdict-card">
+      <div class="light" id="light" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="vtext">
+        <div class="vlabel" id="v-label">—</div>
+        <div class="vdate" id="v-date">—</div>
+        <p class="vwhy" id="v-why">—</p>
+        <div class="vslip"><span class="k" id="k-slip">Launch slip it survives</span><span class="v" id="v-slip">—</span></div>
+        <div class="vslip"><span class="k" id="k-count">Landing dates that pass in 2027</span><span class="v" id="v-count">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="cal-head">
+      <h3>Every landing date in 2027</h3>
+      <div class="legend">
+        <span><i class="c go"></i>Go: passes even on the cautious reading</span>
+        <span><i class="c hold"></i>Marginal: passes only on the optimistic reading</span>
+        <span><i class="c no"></i>No-go</span>
+        <span><i class="c na"></i>Stay runs past our data</span>
+      </div>
+    </div>
+    <div class="cal" id="cal" role="grid" aria-label="Landing date calendar"></div>
+    <p class="fine" id="fine-cal">Cautious reading: more than half of the Sun's disc must clear the terrain, and Earth's centre must clear it by 0.5°. Optimistic reading: any tenth of the Sun, and Earth's centre just above the terrain. When the two disagree we show the more careful colour.</p>
+  </div>
+</section>
+
+<section class="band" id="compare" hidden>
+  <div class="wrap">
+    <h2>Which site, under this requirement?</h2>
+    <p class="lead">The same mission requirement, applied to every site. Change the sliders above and the numbers follow.</p>
+    <div class="tablebox"><table id="compare-table"></table></div>
+  </div>
+</section>
+
+<section class="band" id="horizon">
+  <div class="wrap">
+    <h2>The skyline decides everything</h2>
+    <p class="lead">At the south pole the Sun never climbs more than about 2° and Earth stays under about 7°. This is the terrain outline all the way around the site, with both of them drawn where they are right now.</p>
+    <div class="seg small" role="group" aria-label="Horizon view">
+      <button id="strip-full" aria-pressed="true">Full circle</button>
+      <button id="strip-zoom" aria-pressed="false">Zoom on the Sun</button>
+    </div>
+    <div class="canvas-box"><canvas id="strip" height="320"></canvas></div>
+    <p class="fine" id="fine-strip">Height above the level horizon, in degrees. The vertical scale is stretched so that two degrees are visible. Amber dots show where the Sun goes during the mission stay.</p>
+  </div>
+</section>
+
+<section class="band" id="miss">
+  <div class="wrap two">
+    <div>
+      <h2>What if we land a little off?</h2>
+      <p class="lead" id="miss-lead">—</p>
+      <div class="stats" id="miss-stats"></div>
+      <p class="fine" id="fine-miss">In March 2025 the IM-2 lander came down about 250 m from its target, in a crater where sunlight could not reach its solar cells. The mission ended in about 13 hours. The ring marks that distance.</p>
+    </div>
+    <div>
+      <div class="canvas-box square"><canvas id="missmap" width="560" height="560"></canvas><div class="tip" id="miss-tip" hidden></div></div>
+      <div class="scale"><span>0%</span><i></i><span>100% sunlight over the year</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="proof">
+  <div class="wrap">
+    <h2>How we know the numbers are right</h2>
+    <div class="tablebox">
+      <table id="proof-table">
+        <thead><tr><th>Check</th><th>Result</th><th>Expected</th></tr></thead>
+        <tbody>
+          <tr><td>Smooth Moon, eye 2 m up: how far the horizon dips</td><td>−0.0871°</td><td>−0.0869° (geometry)</td></tr>
+          <tr><td>Smooth Moon, eye 100 m up</td><td>−0.6147°</td><td>−0.6147° (geometry)</td></tr>
+          <tr><td>A 3 km wall placed 50 km away</td><td>2.549° to 2.599°</td><td>2.520° to 2.604° (geometry, within map pixel size)</td></tr>
+          <tr><td>Mountains placed due north and due east</td><td>found at 0.0° and 90.0°</td><td>0° and 90°</td></tr>
+          <tr><td>Sun's centre exactly on the terrain line</td><td>50% of the disc visible</td><td>50%</td></tr>
+          <tr><td>Our map projection against the NASA file's own definition</td><td>0.00 m difference</td><td>less than one 80 m pixel</td></tr>
+          <tr><td>Sun's yearly height range at the site, from JPL Horizons</td><td>−2.06° to +2.05°</td><td>about ±2.1° at this latitude</td></tr>
+          <tr><td>Pass or fail rule written twice, in Python and in JavaScript, on the same target data</td><td>10 go, 16 passing dates in both</td><td>identical counts</td></tr>
+          <tr id="proof-best"><td>Best-lit point near the target, sunlight over 2027</td><td id="proof-best-v">—</td><td>NASA studies report roughly 70% or more for the best spots on this ridge</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="two cols">
+      <div>
+        <h3 id="h-limits">What this tool does not see</h3>
+        <ul class="plain" id="ul-limits">
+          <li><b>Rocks and small craters.</b> The elevation map has 80 m pixels. Orbital camera images would be the next step.</li>
+          <li><b>Temperature.</b> We report hours of darkness, which drives the cold, but we do not model heat.</li>
+          <li><b>Only 2027.</b> Polar lighting shifts from year to year, so other years need their own run.</li>
+          <li><b>The Sun's disc is cut by a level line.</b> A slanted ridge edge would change the visible share slightly.</li>
+          <li><b>The painted map is coarser than the single-point verdict.</b> It checks directions every 1° instead of every 0.5°, so its count can differ by a few dates (12 against 10 at the target).</li>
+          <li><b>Earth's phase and ground stations.</b> "Earth in view" means line of sight, not a working radio link.</li>
+        </ul>
+      </div>
+      <div>
+        <h3 id="h-data">NASA data this is built on</h3>
+        <ul class="plain" id="ul-data">
+          <li><b>LOLA elevation map</b> of the south pole, 80 m per pixel (<span class="mono">LDEM_80S_80MPP_ADJ</span>), from NASA Goddard's Planetary Geodesy Data Archive. It gives the terrain horizon and the 3D view.</li>
+          <li><b>JPL Horizons</b>, for the direction of the Sun and Earth from the site for every hour of 2027.</li>
+        </ul>
+        <p class="fine" id="fine-data">Without either one the tool has nothing to compute. We are not affiliated with or endorsed by NASA.</p>
+        <p class="fine" id="fine-ai">Parts of the code were drafted with an AI coding assistant and then run, tested and reviewed by the team. Details are in <span class="mono">AI_USAGE.md</span> in the repository.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot"><div class="wrap" id="foot">LUNAR//SHIFT · NASA Space Apps Challenge 2026 · Seoul · Challenge: Lunar Landing Site Navigator</div></footer>
+
+<script src="vendor/three.min.js"></script>
+<script src="vendor/OrbitControls.js"></script>
+<script src="data/sites.js"></script>
+<script src="i18n.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
