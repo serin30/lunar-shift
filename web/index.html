@@ -134,6 +134,8 @@
         <input id="in-dark" type="range" min="0" max="120" step="2">
         <label for="in-earth"><span>Earth contact needed each day</span><output id="out-earth"></output></label>
         <input id="in-earth" type="range" min="0" max="24" step="1">
+        <label for="in-power"><span>Power the lander draws</span><output id="out-power"></output></label>
+        <input id="in-power" type="range" min="50" max="5000" step="50" value="3000">
       </div>
     </div>
 
@@ -146,6 +148,9 @@
         <p class="vwhy" id="v-why">—</p>
         <div class="vslip"><span class="k" id="k-slip">Launch slip it survives</span><span class="v" id="v-slip">—</span></div>
         <div class="vslip"><span class="k" id="k-count">Landing dates that pass in 2027</span><span class="v" id="v-count">—</span></div>
+        <div class="vslip"><span class="k" id="k-batt">Battery to get through the longest dark stretch</span><span class="v" id="v-batt">—</span></div>
+        <div class="vslip"><span class="k" id="k-panel">Solar panel to power the whole stay</span><span class="v" id="v-panel">—</span></div>
+        <p class="fine" id="fine-power">Rough sizing, not a design. Battery: the power draw times the longest dark stretch of this stay on the careful estimate, at 150 Wh per kg. Panel: large enough to supply the whole stay from its hours of sunlight, turned to face the Sun, with sunlight at 1,361 W per m² and 28% cell efficiency. Losses, heaters and safety margins are left out. The preset power values (3,000 W crew, 300 W robot) are examples, not real mission figures.</p>
       </div>
     </div>
   </div>

@@ -72,7 +72,7 @@
   function ptLabel(p) { return p.id === 'best' ? t('pt_best', Math.round(Math.hypot(p.east_m, p.north_m))) : t('pt_target'); }
 
   /* ------------------------------------------------------------ state */
-  var st = { pt: site.points[0], hour: 0, playing: false, speed: 24, stay: 6, dark: 0, earth: 8, day: 0, cam: 'orbit', zoom: false, verdicts: [], layer: site.map ? 'crew_go' : 'plain', light: 'survey' };
+  var st = { pt: site.points[0], hour: 0, playing: false, speed: 24, stay: 6, dark: 0, earth: 8, power: 3000, day: 0, cam: 'orbit', zoom: false, verdicts: [], layer: site.map ? 'crew_go' : 'plain', light: 'survey' };
 
   /* ------------------------------------------------------------ verdict */
   function evalDay(p, d, thr) {
@@ -180,8 +180,26 @@
     $('v-why').textContent = whySentence(v);
     $('v-slip').textContent = slipInfo(st.day);
     $('v-count').textContent = t('count', counts.go, counts.hold, DAYS - counts.na);
+    refreshPower();
     if (scene3d) scene3d.setVerdict(v.c);
     refreshCompare();
+  }
+
+  /* ------------------------------------------------------------ power: what the dark stretch costs in battery and panel */
+  var WH_PER_KG = 150, SUN_W_M2 = 1361, CELL_EFF = 0.28;
+  function powerFor(p, d) {
+    var v = evalDay(p, d, CAUTIOUS); if (!v) return null;
+    var a = d * 24, b = a + st.stay * 24, lit = 0;
+    for (var i = a; i < b; i++) lit += p.sun[i];                        // hours of full-Sun equivalent in the stay
+    var share = lit / (b - a), wh = st.power * v.dark;
+    return { dark: v.dark, wh: wh, kg: wh / WH_PER_KG, share: share, m2: share > 0.02 ? st.power / share / (SUN_W_M2 * CELL_EFF) : null };
+  }
+  function refreshPower() {
+    var r = powerFor(st.pt, st.day);
+    $('out-power').textContent = t('watts', st.power);
+    if (!r) { $('v-batt').textContent = '—'; $('v-panel').textContent = '—'; return; }
+    $('v-batt').textContent = r.dark === 0 ? t('batt_none') : t('batt', r.dark, r.wh / 1000, r.kg);
+    $('v-panel').textContent = r.m2 === null ? t('panel_none') : t('panel', r.m2, Math.round(100 * r.share));
   }
 
   /* ------------------------------------------------------------ requirement controls */
@@ -563,7 +581,7 @@
     }
     function setCam(mode) {
       st.cam = mode; controls.enabled = mode === 'orbit'; look.free = false; look.pitch = 1.2; fly = null;
-      if (mode !== 'orbit') { pickRing.visible = false; $('pick').hidden = true; st.pick = null; }
+      if (mode !== 'orbit') { pickRing.visible = false; st.pick = null; renderPick(); }
       markers.visible = mode === 'orbit'; beam.visible = mode === 'orbit'; halo.visible = mode === 'orbit'; ring.visible = mode === 'stand';
       camera.fov = mode === 'orbit' ? 38 : 30; camera.near = mode === 'orbit' ? 20 : 0.5; camera.updateProjectionMatrix();
       if (mode === 'orbit') camera.position.copy(eye).add(HOME);
@@ -602,17 +620,17 @@
   /* the numbers at a clicked spot, from the decision map */
   function showPick(east, north, up) { st.pick = { east: east, north: north, up: up }; renderPick(); }
   function renderPick() {
-    var k = st.pick, box = $('pick'); if (!k) { box.hidden = true; return; }
+    var k = st.pick, box = $('pick'); if (!k) { box.hidden = true; box.parentNode.classList.remove('has-pick'); return; }
     var map = site.map, dist = Math.hypot(k.east, k.north), rows = [];
     $('pick-title').textContent = t('pick_title');
-    $('pick-where').textContent = t('pick_where', dist < 1000 ? Math.round(dist / 10) * 10 + ' m' : (dist / 1000).toFixed(1) + ' km', t('compass')[Math.round(wrap360(Math.atan2(k.east, k.north) * 180 / Math.PI) / 45) % 8], (k.up >= 0 ? '+' : '−') + Math.abs(Math.round(k.up)) + ' m');
+    $('pick-where').textContent = dist < 60 ? t('pick_at') : t('pick_where', dist < 1000 ? Math.round(dist / 10) * 10 + ' m' : (dist / 1000).toFixed(1) + ' km', t('compass')[Math.round(wrap360(Math.atan2(k.east, k.north) * 180 / Math.PI) / 45) % 8], (k.up >= 0 ? '+' : '−') + Math.abs(Math.round(k.up)) + ' m');
     if (map && Math.abs(k.east) <= map.half_m && Math.abs(k.north) <= map.half_m) {
       var i = Math.round((k.north + map.half_m) / map.step_m) * map.size + Math.round((k.east + map.half_m) / map.step_m);
       rows = [[t('pick_sun'), Math.round(map.sun_pct[i]) + '%'], [t('pick_earth'), Math.round(map.earth_pct[i]) + '%'], [t('pick_dark'), fmtDur(map.dark_h[i])],
               [t('pick_crew'), t('cmp_cell', map.crew_go[i], map.crew_pass[i] - map.crew_go[i])], [t('pick_robot'), t('cmp_cell', map.robot_go[i], map.robot_pass[i] - map.robot_go[i])]];
       $('pick-rows').innerHTML = rows.map(function (r) { return '<div class="row"><span class="k">' + r[0] + '</span><span class="v">' + r[1] + '</span></div>'; }).join('');
     } else $('pick-rows').innerHTML = '<div class="sub">' + t('pick_outside', map ? 2 * map.half_m / 1000 : 0) + '</div>';
-    box.hidden = false;
+    box.hidden = false; box.parentNode.classList.add('has-pick');
   }
 
   function press(sel, on) { all(sel).forEach(function (b) { b.setAttribute('aria-pressed', String(on(b))); }); }
@@ -682,8 +700,10 @@
     scene3d.flyIn(function () { if (tour.i < 0) { setLightUI('survey'); setLayerUI(site.map ? 'crew_go' : 'plain'); } });
   }
 
-  $('preset-crew').addEventListener('click', function () { setReq(6, 0, 8); refreshVerdictUI(); redraw2D(); });
-  $('preset-robot').addEventListener('click', function () { setReq(14, 24, 0); refreshVerdictUI(); redraw2D(); });
+  function setPower(w) { st.power = w; $('in-power').value = w; }
+  $('preset-crew').addEventListener('click', function () { setPower(3000); setReq(6, 0, 8); refreshVerdictUI(); redraw2D(); });
+  $('preset-robot').addEventListener('click', function () { setPower(300); setReq(14, 24, 0); refreshVerdictUI(); redraw2D(); });
+  $('in-power').addEventListener('input', function () { st.power = +$('in-power').value; refreshPower(); });
   ['in-stay', 'in-dark', 'in-earth'].forEach(function (id) { $(id).addEventListener('input', onReqInput); });
   $('cam-orbit').addEventListener('click', function () { if (scene3d) scene3d.setCam('orbit'); });
   $('cam-stand').addEventListener('click', function () { if (scene3d) scene3d.setCam('stand'); });

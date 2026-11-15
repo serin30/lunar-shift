@@ -50,7 +50,7 @@ button{cursor:pointer}
 .pick .sub{color:var(--muted);font-size:12.5px;margin:2px 0 6px}
 .pick .row{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-top:1px solid var(--line)}
 .pick .row .k{font-weight:400;color:var(--muted)}
-.pick .row .v{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right}
+.pick .row .v{white-space:nowrap;font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right}
 .pick .x{position:absolute;top:4px;right:6px;background:none;border:0;color:var(--muted);font-size:20px;line-height:1;cursor:pointer;padding:4px 6px}
 .readout .row{display:flex;align-items:center;gap:8px;padding:4px 0}
 .readout .row .k{flex:1}
@@ -136,6 +136,8 @@ input[type=range]{width:100%;accent-color:var(--sun);height:28px}
 .vwhy{margin:12px 0 14px;max-width:46ch}
 .vmean{font-size:15.5px;font-weight:500;margin:2px 0 6px;max-width:44ch}
 .vslip{display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding:8px 0}
+.vslip .k{flex:1 1 46%}.vslip .v{text-align:right;flex:1 1 54%}
+#fine-power{font-size:12.5px;margin-top:10px}
 .vslip .v{font-family:var(--mono);font-variant-numeric:tabular-nums}
 
 .cal-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin:44px 0 12px}
@@ -182,7 +184,7 @@ ul.plain li{max-width:60ch}
   .two{grid-template-columns:minmax(0,1fr);gap:26px}
   .hud-left{position:absolute;top:auto;bottom:212px;left:12px;right:12px;width:auto}
   .sitecard{display:none}
-  .readout .row.small{display:none} .readout .more{display:none}
+  .readout .row.small{display:none} .readout .more{display:none} .has-pick .readout{display:none} .pick{font-size:12.5px;padding:8px 11px} .pick .row{padding:2px 0}
   .hud-note{display:none}
   .hud-right{position:absolute;top:214px;left:12px;right:12px;width:auto;padding:9px}
   .hud-right .k,.legendbar .cap{display:none}
