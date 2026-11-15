@@ -45,6 +45,13 @@ button{cursor:pointer}
 .k{color:var(--muted);font-size:12.5px}
 .sitecard .v{font-family:var(--display);font-size:16px;margin-top:1px}
 .sub{color:var(--muted);font-size:12px;font-family:var(--mono)}
+.pick{position:relative;background:rgba(12,17,24,.9);border:1px solid #5a6676;border-radius:10px;padding:11px 13px;backdrop-filter:blur(6px);font-size:13.5px}
+.pick .k{color:var(--ink);font-weight:600}
+.pick .sub{color:var(--muted);font-size:12.5px;margin:2px 0 6px}
+.pick .row{display:flex;justify-content:space-between;gap:10px;padding:3px 0;border-top:1px solid var(--line)}
+.pick .row .k{font-weight:400;color:var(--muted)}
+.pick .row .v{font-family:var(--mono);font-variant-numeric:tabular-nums;text-align:right}
+.pick .x{position:absolute;top:4px;right:6px;background:none;border:0;color:var(--muted);font-size:20px;line-height:1;cursor:pointer;padding:4px 6px}
 .readout .row{display:flex;align-items:center;gap:8px;padding:4px 0}
 .readout .row .k{flex:1}
 .readout .row .v{font-family:var(--mono);font-size:15px;font-variant-numeric:tabular-nums}

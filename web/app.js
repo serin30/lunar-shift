@@ -484,6 +484,23 @@
     });
     window.addEventListener('pointerup', function () { drag = null; });
 
+    // click the ground to read the numbers at that spot
+    var ray = new T.Raycaster(), down = null;
+    var pickRing = new T.Mesh(new T.RingGeometry(110, 150, 48), new T.MeshBasicMaterial({ color: 0xffffff, side: T.DoubleSide, transparent: true, opacity: 0.95, depthTest: false }));
+    pickRing.rotation.x = -Math.PI / 2; pickRing.visible = false; pickRing.renderOrder = 5; scene.add(pickRing);
+    canvas.addEventListener('pointerdown', function (ev) { down = { x: ev.clientX, y: ev.clientY }; });
+    canvas.addEventListener('pointerup', function (ev) {
+      if (!down || st.cam !== 'orbit' || Math.hypot(ev.clientX - down.x, ev.clientY - down.y) > 6) { down = null; return; }
+      down = null;
+      var r = canvas.getBoundingClientRect();
+      ray.setFromCamera(new T.Vector2((ev.clientX - r.left) / r.width * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1), camera);
+      var hit = ray.intersectObject(ground)[0]; if (!hit) return;
+      var east = hit.point.x, north = -hit.point.z;
+      pickRing.position.copy(hit.point); pickRing.position.y += 12; pickRing.visible = true;
+      showPick(east, north, hit.point.y + drop(east, north));
+    });
+    function clearPick() { pickRing.visible = false; }
+
     // paint the ground with a result layer from the decision map
     var LAYERS = {
       crew_go:   { lo: [0.10, 0.30, 0.20], hi: [0.56, 1.00, 0.70], zero: [0.25, 0.27, 0.32], dates: true },
@@ -546,6 +563,7 @@
     }
     function setCam(mode) {
       st.cam = mode; controls.enabled = mode === 'orbit'; look.free = false; look.pitch = 1.2; fly = null;
+      if (mode !== 'orbit') { pickRing.visible = false; $('pick').hidden = true; st.pick = null; }
       markers.visible = mode === 'orbit'; beam.visible = mode === 'orbit'; halo.visible = mode === 'orbit'; ring.visible = mode === 'stand';
       camera.fov = mode === 'orbit' ? 38 : 30; camera.near = mode === 'orbit' ? 20 : 0.5; camera.updateProjectionMatrix();
       if (mode === 'orbit') camera.position.copy(eye).add(HOME);
@@ -577,10 +595,26 @@
     window.addEventListener('resize', resize);
     resize(); setPoint(); camera.position.copy(eye).add(reduceMotion ? HOME : FAR); setTime(); setLayer(st.layer); applyLight(); note();
     canvas.addEventListener('wheel', function () { fly = null; }, { passive: true });
-    return { render: render, setTime: setTime, setPoint: setPoint, setCam: setCam, setVerdict: setVerdict, setLayer: setLayer, setLight: setLight, flyIn: flyIn, spin: spin, note: note };
+    return { render: render, setTime: setTime, setPoint: setPoint, setCam: setCam, setVerdict: setVerdict, setLayer: setLayer, setLight: setLight, flyIn: flyIn, spin: spin, note: note, clearPick: clearPick };
   }
 
   /* ------------------------------------------------------------ wiring */
+  /* the numbers at a clicked spot, from the decision map */
+  function showPick(east, north, up) { st.pick = { east: east, north: north, up: up }; renderPick(); }
+  function renderPick() {
+    var k = st.pick, box = $('pick'); if (!k) { box.hidden = true; return; }
+    var map = site.map, dist = Math.hypot(k.east, k.north), rows = [];
+    $('pick-title').textContent = t('pick_title');
+    $('pick-where').textContent = t('pick_where', dist < 1000 ? Math.round(dist / 10) * 10 + ' m' : (dist / 1000).toFixed(1) + ' km', t('compass')[Math.round(wrap360(Math.atan2(k.east, k.north) * 180 / Math.PI) / 45) % 8], (k.up >= 0 ? '+' : '−') + Math.abs(Math.round(k.up)) + ' m');
+    if (map && Math.abs(k.east) <= map.half_m && Math.abs(k.north) <= map.half_m) {
+      var i = Math.round((k.north + map.half_m) / map.step_m) * map.size + Math.round((k.east + map.half_m) / map.step_m);
+      rows = [[t('pick_sun'), Math.round(map.sun_pct[i]) + '%'], [t('pick_earth'), Math.round(map.earth_pct[i]) + '%'], [t('pick_dark'), fmtDur(map.dark_h[i])],
+              [t('pick_crew'), t('cmp_cell', map.crew_go[i], map.crew_pass[i] - map.crew_go[i])], [t('pick_robot'), t('cmp_cell', map.robot_go[i], map.robot_pass[i] - map.robot_go[i])]];
+      $('pick-rows').innerHTML = rows.map(function (r) { return '<div class="row"><span class="k">' + r[0] + '</span><span class="v">' + r[1] + '</span></div>'; }).join('');
+    } else $('pick-rows').innerHTML = '<div class="sub">' + t('pick_outside', map ? 2 * map.half_m / 1000 : 0) + '</div>';
+    box.hidden = false;
+  }
+
   function press(sel, on) { all(sel).forEach(function (b) { b.setAttribute('aria-pressed', String(on(b))); }); }
   function setPointById(id) {
     st.pt = site.points.filter(function (p) { return p.id === id; })[0] || site.points[0];
@@ -596,7 +630,7 @@
     lang = l; try { localStorage.setItem('ls-lang', l); } catch (err) { /* private window: just keep it for this visit */ }
     applyStatic();
     all('#point-seg button').forEach(function (b) { b.textContent = ptLabel(site.points.filter(function (p) { return p.id === b.dataset.pt; })[0]); });
-    showReq(); missText(); refreshVerdictUI(); redraw2D(); drawMiss();
+    showReq(); missText(); refreshVerdictUI(); redraw2D(); drawMiss(); renderPick();
     if (scene3d) { scene3d.setLayer(st.layer); scene3d.note(); }
     setPlaying(st.playing);
     if (tour.i >= 0) $('caption-text').textContent = t('tour')[tour.i];
@@ -665,6 +699,7 @@
   $('help').addEventListener('click', startTour);
   $('tour-stop').addEventListener('click', function () { clearTimeout(tour.timer); tourStep(tour.i + 1); });
   $('intro-skip').addEventListener('click', function () { closeIntro(); });
+  $('pick-close').addEventListener('click', function () { st.pick = null; renderPick(); if (scene3d) scene3d.clearPick(); });
   $('readout-more').addEventListener('click', function () { var open = document.querySelector('.readout').classList.toggle('open'); $('readout-more').setAttribute('aria-expanded', String(open)); });
 
   var tl = $('timeline'), scrub = false;
