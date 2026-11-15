@@ -52,6 +52,7 @@
     watts: function (w) { return w.toLocaleString('en-US') + ' W'; },
     batt: function (h, kwh, kg) { return h + ' h dark: ' + (kwh < 10 ? kwh.toFixed(1) : Math.round(kwh)) + ' kWh, about ' + Math.round(kg).toLocaleString('en-US') + ' kg'; }, batt_none: 'none: no dark stretch in this stay',
     panel: function (m2, pct) { return (m2 < 10 ? m2.toFixed(1) : Math.round(m2)) + ' m² (Sun up ' + pct + '% of the stay)'; }, panel_none: 'no panel can do it: almost no sunlight in this stay',
+    rib_0: 'on time',
     pick_title: 'The spot you clicked', pick_where: function (d, dir, up) { return d + ' ' + dir + ' of the target, ' + up + ' in height'; },
     compass: ['north', 'north-east', 'east', 'south-east', 'south', 'south-west', 'west', 'north-west'],
     pick_sun: 'Sunlight over 2027', pick_earth: 'Earth in view', pick_dark: 'Longest dark stretch', pick_crew: 'Crew dates', pick_robot: 'Robot dates', pick_at: 'At the target point',
@@ -111,6 +112,7 @@
     watts: function (w) { return w.toLocaleString('en-US') + ' W'; },
     batt: function (h, kwh, kg) { return '어둠 ' + h + '시간: ' + (kwh < 10 ? kwh.toFixed(1) : Math.round(kwh)) + ' kWh, 약 ' + Math.round(kg).toLocaleString('en-US') + ' kg'; }, batt_none: '필요 없음: 이 체류 기간에는 어둠이 없습니다',
     panel: function (m2, pct) { return (m2 < 10 ? m2.toFixed(1) : Math.round(m2)) + ' m² (체류 기간의 ' + pct + '% 동안 햇빛)'; }, panel_none: '어떤 패널로도 불가: 이 체류 기간에는 햇빛이 거의 없습니다',
+    rib_0: '정시',
     pick_title: '클릭한 지점', pick_where: function (d, dir, up) { return '목표에서 ' + dir + '쪽으로 ' + d + ', 높이 ' + up; },
     compass: ['북', '북동', '동', '남동', '남', '남서', '서', '북서'],
     pick_sun: '2027년 햇빛', pick_earth: '지구 가시', pick_dark: '가장 긴 어둠', pick_crew: '유인 착륙일', pick_robot: '로봇 착륙일', pick_at: '목표 지점',
@@ -146,7 +148,7 @@
     ['label[for="in-stay"] span', '표면 체류 기간'], ['label[for="in-dark"] span', '견딜 수 있는 가장 긴 어둠'], ['label[for="in-earth"] span', '하루에 필요한 지구 통신 시간'],
     ['label[for="in-power"] span', '착륙선이 쓰는 전력'], ['#k-batt', '가장 긴 어둠을 버티는 데 필요한 배터리'], ['#k-panel', '체류 기간 전체를 감당할 태양전지판'],
     ['#fine-power', '대략적인 크기 계산이며 설계가 아닙니다. 배터리: 전력 × 이 체류 기간의 가장 긴 어둠(신중한 추정), 1kg당 150Wh. 태양전지판: 체류 기간 전체에 쓸 전력을 햇빛이 드는 시간 안에 만들 수 있는 크기, 태양을 향해 돌아가는 패널, 햇빛 1m²당 1,361W, 전지 효율 28%. 손실, 히터, 안전 여유는 넣지 않았습니다. 프리셋의 전력 값(유인 3,000W, 로봇 300W)은 예시이며 실제 임무 수치가 아닙니다.'],
-    ['#k-slip', '버틸 수 있는 발사 지연'], ['#k-count', '2027년에 통과하는 착륙일'],
+    ['#k-slip', '버틸 수 있는 발사 지연'], ['#k-ribbon', '발사가 하루씩 밀리면'], ['#k-count', '2027년에 통과하는 착륙일'],
     ['.cal-head h3', '2027년의 모든 착륙일'],
     ['.legend span:nth-child(1)', '<i class="c go"></i>가능: 가장 나쁘게 잡아도 통과'], ['.legend span:nth-child(2)', '<i class="c hold"></i>주의: 운이 따라야만 통과'],
     ['.legend span:nth-child(3)', '<i class="c no"></i>불가: 운이 따라도 실패'], ['.legend span:nth-child(4)', '<i class="c na"></i>체류 기간이 데이터 범위를 벗어남'],
@@ -165,7 +167,7 @@
     ['#h-data', '기반이 된 NASA 데이터'],
     ['#ul-data', '<li><b>LOLA 고도 지도</b>(달 남극, 픽셀당 80m, <span class="mono">LDEM_80S_80MPP_ADJ</span>), NASA 고다드 행성측지 데이터 아카이브. 지형 지평선과 3D 지형에 사용합니다.</li><li><b>JPL Horizons</b>, 2027년 매시간 착륙지에서 본 태양과 지구의 방향에 사용합니다.</li><li><b>LOLA 평균 햇빛·지구 가시 지도</b>(Mazarico 외, 2011). 우리 결과를 검증하는 데만 사용했습니다. 비교는 위 표와 README에 있습니다.</li>'],
     ['#fine-data', '둘 중 하나라도 없으면 이 도구는 계산할 것이 없습니다. 우리는 NASA와 제휴하거나 NASA의 보증을 받지 않았습니다.'],
-    ['#fine-ai', '코드와 문구의 대부분은 AI 도구(Claude)로 초안을 만들고, 팀이 실행·테스트·검토했습니다. 아이디어와 범위, NASA 데이터로 한 모든 계산 실행은 우리가 했습니다. 자세한 내용은 저장소의 <span class="mono">AI_USAGE.md</span>에 있습니다.'],
+    ['#fine-ai', '코드와 문구의 대부분은 AI 도구(Claude)로 초안을 만들고, 팀이 실행·테스트·검토했습니다. 범위에 대한 결정과 NASA 데이터로 한 모든 계산 실행은 우리가 했습니다. 자세한 내용은 저장소의 <span class="mono">AI_USAGE.md</span>에 있습니다.'],
     ['#foot', 'LUNAR//SHIFT · NASA Space Apps Challenge 2026 · 서울 · 챌린지: Lunar Landing Site Navigator']
   ];
   var proofKo = {

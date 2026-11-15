@@ -192,7 +192,7 @@ We are not affiliated with or endorsed by NASA.
 
 ## Use of AI tools
 
-Most of the code and the wording were drafted with an AI assistant (Claude) and then run, tested and reviewed by the team. The idea, the scope, the choice of sites and every run on NASA data are ours. The full list is in `AI_USAGE.md`.
+Most of the code and the wording were drafted with an AI assistant (Claude) and then run, tested and reviewed by the team. The decisions on scope, the choice of sites and every run on NASA data are ours. The full list is in `AI_USAGE.md`.
 
 ## Sites computed
 

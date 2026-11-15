@@ -181,6 +181,9 @@
     $('v-slip').textContent = slipInfo(st.day);
     $('v-count').textContent = t('count', counts.go, counts.hold, DAYS - counts.na);
     refreshPower();
+    var rib = '';
+    for (var s = 0; s <= 14; s++) { var dd = st.day + s, cc = dd < DAYS ? st.verdicts[dd].c : 'na'; rib += '<button type="button" class="' + cc + (s === 0 ? ' sel' : '') + '" data-day="' + dd + '" title="' + (dd < DAYS ? fmtDay(dd) + ': ' + t('n_' + cc) : '') + '"' + (dd < DAYS ? '' : ' disabled') + '><span>' + (s === 0 ? t('rib_0') : '+' + s) + '</span></button>'; }
+    $('ribbon').innerHTML = rib;
     if (scene3d) scene3d.setVerdict(v.c);
     refreshCompare();
   }
@@ -719,6 +722,7 @@
   $('help').addEventListener('click', startTour);
   $('tour-stop').addEventListener('click', function () { clearTimeout(tour.timer); tourStep(tour.i + 1); });
   $('intro-skip').addEventListener('click', function () { closeIntro(); });
+  $('ribbon').addEventListener('click', function (ev) { var b = ev.target.closest('button'); if (!b || b.disabled) return; st.day = +b.dataset.day; st.hour = st.day * 24; refreshVerdictUI(); redraw2D(); });
   $('pick-close').addEventListener('click', function () { st.pick = null; renderPick(); if (scene3d) scene3d.clearPick(); });
   $('readout-more').addEventListener('click', function () { var open = document.querySelector('.readout').classList.toggle('open'); $('readout-more').setAttribute('aria-expanded', String(open)); });
 
