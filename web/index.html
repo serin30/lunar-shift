@@ -117,7 +117,7 @@
   <div class="wrap two">
     <div>
       <h2>Does the mission still work?</h2>
-      <p class="lead">Set what the mission needs. Pick a landing date. The answer is a light, not a percentage.</p>
+      <p class="lead">Set what the mission needs. Pick a landing date. The answer is a traffic light, not a percentage.</p>
 
       <div class="seg" role="group" aria-label="Mission preset">
         <button id="preset-crew" aria-pressed="true">Crew, 6 days</button>
@@ -138,6 +138,7 @@
       <div class="light" id="light" aria-hidden="true"><i></i><i></i><i></i></div>
       <div class="vtext">
         <div class="vlabel" id="v-label">—</div>
+        <div class="vmean" id="v-mean"></div>
         <div class="vdate" id="v-date">—</div>
         <p class="vwhy" id="v-why">—</p>
         <div class="vslip"><span class="k" id="k-slip">Launch slip it survives</span><span class="v" id="v-slip">—</span></div>
@@ -150,14 +151,14 @@
     <div class="cal-head">
       <h3>Every landing date in 2027</h3>
       <div class="legend">
-        <span><i class="c go"></i>Go: passes even on the cautious reading</span>
-        <span><i class="c hold"></i>Marginal: passes only on the optimistic reading</span>
-        <span><i class="c no"></i>No-go</span>
+        <span><i class="c go"></i>Go: works even when we assume the worst</span>
+        <span><i class="c hold"></i>Marginal: works only if things go our way</span>
+        <span><i class="c no"></i>No-go: fails even with luck</span>
         <span><i class="c na"></i>Stay runs past our data</span>
       </div>
     </div>
     <div class="cal" id="cal" role="grid" aria-label="Landing date calendar"></div>
-    <p class="fine" id="fine-cal">Cautious reading: more than half of the Sun's disc must clear the terrain, and Earth's centre must clear it by 0.5°. Optimistic reading: any tenth of the Sun, and Earth's centre just above the terrain. When the two disagree we show the more careful colour.</p>
+    <p class="fine" id="fine-cal">We judge every date twice. The careful estimate counts sunlight only when more than half of the Sun's disc is above the terrain, and counts Earth only when it clears the terrain by 0.5°. The generous estimate accepts a tenth of the Sun, and Earth just above the terrain. Green passes both. Yellow passes only the generous one. Red passes neither.</p>
   </div>
 </section>
 

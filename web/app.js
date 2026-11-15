@@ -175,7 +175,7 @@
     }
     $('light').className = 'light ' + v.c;
     $('verdict-card').className = 'verdict-card ' + v.c;
-    $('v-label').textContent = t('v_' + v.c);
+    $('v-label').textContent = t('v_' + v.c); $('v-mean').textContent = t('mean_' + v.c);
     $('v-date').textContent = t('v_date', fmtDay(st.day), t('days', st.stay), ptLabel(st.pt));
     $('v-why').textContent = whySentence(v);
     $('v-slip').textContent = slipInfo(st.day);
