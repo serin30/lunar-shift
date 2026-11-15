@@ -203,19 +203,22 @@ ul.plain li{max-width:60ch}
 
 @media (max-width:860px){
   .two{grid-template-columns:minmax(0,1fr);gap:26px}
-  .hud-left{position:absolute;top:auto;bottom:212px;left:12px;right:12px;width:auto}
+  /* Phone: stack the overlay panels in normal flow so they can never cover each other,
+     whatever the language or how many rows the buttons wrap to. */
+  .hero{display:flex;flex-direction:column;height:auto;min-height:max(900px,100svh)}
+  .hero>.hud{position:relative;top:auto;right:auto;bottom:auto;left:auto;transform:none;flex:none}
+  .hud-left{margin:auto 12px 0;width:auto}
   .sitecard{display:none}
   .readout .row.small{display:none} .readout .more{display:none} .has-pick .readout{display:none} .pick{font-size:12.5px;padding:8px 11px} .pick .row{padding:2px 0}
   .hud-note{display:none}
-  .hud-answer{bottom:auto;top:352px;left:12px;right:12px;transform:none;max-width:none;padding:8px 12px;gap:10px} .hud-answer .t{font-size:12.5px} .hud-answer .s{font-size:11.5px} .has-pick~.hud-answer{display:none}
-  .hud-right{position:absolute;top:214px;left:12px;right:12px;width:auto;padding:9px}
+  .hud-answer{margin:10px 12px 0;max-width:none;padding:8px 12px;gap:10px} .hud-answer .t{font-size:12.5px} .hud-answer .s{font-size:11.5px} .has-pick~.hud-answer{display:none}
+  .hud-right{margin:4px 12px 0;width:auto;padding:9px}
   .hud-right .k,.legendbar .cap{display:none}
   .hud-bottom{flex-wrap:wrap;gap:10px;padding:10px 12px 12px}
   .tl-wrap{order:5;flex-basis:100%}
   .hud-top{padding:12px}
   .intro{padding:16px;background:rgba(5,7,11,.88)} .intro-card{margin-left:0}
   .caption{bottom:150px;font-size:14.5px}
-  .hero{height:auto;min-height:820px}
   .verdict-card{flex-direction:column}
   .light{flex-direction:row;width:auto}
   .band{padding:44px 0}
