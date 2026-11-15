@@ -132,6 +132,34 @@ The rule is written twice, in Python (`decision_map.py`) and in JavaScript (`web
 
 Run the first five yourself with `python test_horizon.py`.
 
+## Comparison with NASA's average illumination map
+
+NASA's LOLA average illumination and Earth visibility maps (Mazarico et al. 2011, https://pgda.gsfc.nasa.gov/products/69, files `AVGVISIB_85S_060M_201608.TIF` and `..._EARTH.TIF`, 60 m per pixel) give, for every pixel, the share of time the Sun (or Earth) is above the local terrain, averaged over one 18.6-year lunar nutation cycle. Our numbers are the same quantity for the single year 2027. `python compare_nasa.py` reads both maps (not stored in this repository, download from the products page), writes `nasa_compare.json` and prints this table. Values are percent of time.
+
+| Site | Sun, ours (2027) | Sun, NASA at the same pixel | Sun, NASA mean within 300 m | Earth, ours | Earth, NASA same pixel |
+|---|---|---|---|---|---|
+| site01 Connecting Ridge | 46.4 | 43.9 | 49.5 | 39.8 | 39.1 |
+| site02 Nobile Rim 1 | 79.2 | 76.8 | 49.7 | 62.1 | 67.4 |
+| site03 Mons Malapert | 77.1 | 64.0 | 49.1 | 67.4 | 70.9 |
+
+Across the 81 scan points around each site (NASA value averaged over a 60 m radius):
+
+| Site | Sun correlation | Sun, ours minus NASA (mean, points) | Earth correlation | Earth, ours minus NASA (mean, points) |
+|---|---|---|---|---|
+| site01 | 0.74 | +6.0 | 0.97 | -3.8 |
+| site02 | 0.82 | +4.1 | 0.98 | -3.1 |
+| site03 | 0.92 | +4.5 | 0.98 | +1.4 |
+
+What this shows:
+
+- **Site01 matches well.** Our sunlight is within 2.5 points of NASA at the target pixel (46.4 against 43.9), and our Earth visibility within 1 point (39.8 against 39.1).
+- **The pattern across space agrees.** Where NASA sees more sun or more Earth, so do we. Earth visibility follows NASA closely (correlation 0.97 to 0.98 at all three sites). Sunlight correlates 0.74 to 0.92.
+- **We read sunlight about 4 to 6 points high on average** around all three sites. Sites 2 and 3 are the worst at the target itself: the pixel is a bright spot (NASA 77% and 64%) inside terrain that averages about 49% within 300 m, and our value of 79% and 77% sits at or above the bright spot. The causes we know of: our elevation map ends at 80 S, so terrain far to the north of sites 2 and 3 is missing from the skyline (see below); our observer is 2 m above the ground while NASA's is on the ground; and NASA's pixel is 60 m wide against our 80 m map. We have not separated the three.
+- **Earth visibility differs by up to 5 points** at a pixel (site02: 62.1 against 67.4). NASA counts Earth as visible if any part of its disc is clear, we count it only when its centre is clear, so we should read lower.
+- **Years differ.** NASA averages 18.6 years, we compute 2027 only. The Sun's yearly height range is similar every year, but a single year can sit above or below the long-term average.
+
+So the three sites are ranked the same way by both sources (site02 and site03 far brighter than site01), and site01 agrees closely in absolute value. For sites 2 and 3, treat our sunlight as an upper bound.
+
 ## What this tool does not see
 
 - **Rocks and small craters.** The elevation map has 80 m pixels.
@@ -143,6 +171,7 @@ Run the first five yourself with `python test_horizon.py`.
 
 ## Data sources
 
+- **LOLA average illumination and Earth visibility maps**, `AVGVISIB_85S_060M_201608.TIF` and `AVGVISIB_85S_060M_201608_EARTH.TIF`, 60 m per pixel, Mazarico et al. (2011), *Icarus* 211, 1066-1081, https://doi.org/10.1016/j.icarus.2010.10.030, used only for the comparison above: https://pgda.gsfc.nasa.gov/products/69
 - **LOLA south pole elevation map**, `LDEM_80S_80MPP_ADJ.TIF`, 80 m per pixel, from NASA Goddard's Planetary Geodesy Data Archive: https://pgda.gsfc.nasa.gov/products/90
 - **Candidate site coordinates** for site02 (Nobile Rim 1, point NR103: 85.5456° S, 37.5572° E) and site03 (Mons Malapert, point MMA_K2023: 85.9919° S, 2.0564° E), from the landing-site shapefile that accompanies Wueller et al. (2026), *Journal of Geophysical Research: Planets*, https://doi.org/10.1029/2025JE009434 (data: https://doi.org/10.5281/zenodo.17084058, CC BY 4.0). Both lie in NASA's October 2024 Artemis III candidate regions (https://ntrs.nasa.gov/citations/20250011660). Site01 is Connecting Ridge, from NASA's 2022 candidate list.
 - **JPL Horizons**, for the apparent azimuth and elevation of the Sun and Earth from a site on the Moon: https://ssd.jpl.nasa.gov/horizons/

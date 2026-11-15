@@ -1,0 +1,53 @@
+{
+ "site01": {
+  "lat": -89.4632,
+  "lon": 222.51,
+  "sun_ours_disc": 46.34879579956626,
+  "sun_ours_centre": 46.30749914393334,
+  "sun_nasa_pixel": 43.87200000000001,
+  "sun_nasa_300m": 49.47585185185186,
+  "earth_ours": 39.835635201461024,
+  "earth_nasa_pixel": 39.05200000000001,
+  "earth_nasa_300m": 46.77180246913581,
+  "scan_n": 81,
+  "scan_sun_corr": 0.7356192047338872,
+  "scan_sun_mean_diff": 6.01728395061728,
+  "scan_sun_mae": 7.1831506172839505,
+  "scan_earth_corr": 0.9692477456544559,
+  "scan_earth_mean_diff": -3.771772839506177
+ },
+ "site02": {
+  "lat": -85.5456,
+  "lon": 37.5572,
+  "sun_ours_disc": 79.22507704599933,
+  "sun_ours_centre": 79.20328729597078,
+  "sun_nasa_pixel": 76.796,
+  "sun_nasa_300m": 49.679950617283964,
+  "earth_ours": 62.08195411482708,
+  "earth_nasa_pixel": 67.352,
+  "earth_nasa_300m": 60.63975308641976,
+  "scan_n": 81,
+  "scan_sun_corr": 0.8177120722410874,
+  "scan_sun_mean_diff": 4.115387654320984,
+  "scan_sun_mae": 4.66217283950617,
+  "scan_earth_corr": 0.9784877276646706,
+  "scan_earth_mean_diff": -3.065530864197535
+ },
+ "site03": {
+  "lat": -85.9919,
+  "lon": 2.0564,
+  "sun_ours_disc": 77.11369706654492,
+  "sun_ours_centre": 77.125898869992,
+  "sun_nasa_pixel": 63.95200000000001,
+  "sun_nasa_300m": 49.07555555555556,
+  "earth_ours": 67.37815317886086,
+  "earth_nasa_pixel": 70.912,
+  "earth_nasa_300m": 66.89461728395062,
+  "scan_n": 81,
+  "scan_sun_corr": 0.9201076279321648,
+  "scan_sun_mean_diff": 4.508118518518516,
+  "scan_sun_mae": 5.199733333333331,
+  "scan_earth_corr": 0.9809847712526178,
+  "scan_earth_mean_diff": 1.3542024691357986
+ }
+}
