@@ -73,10 +73,11 @@
 
   <div class="hud hud-note" id="scene-note"></div>
 
-  <div class="caption" id="caption" hidden><span id="caption-text"></span><button id="tour-stop">Skip</button></div>
+  <div class="caption" id="caption" hidden><span id="caption-text"></span><button id="tour-stop">Next</button></div>
 
   <div class="intro" id="intro">
     <div class="intro-card">
+      <div class="seg intro-lang" role="group" aria-label="Language"><button data-lang="en" aria-pressed="true">English</button><button data-lang="ko" aria-pressed="false" lang="ko">한국어</button></div>
       <div class="eyebrow" id="intro-eyebrow">NASA Space Apps Challenge 2026 · Lunar Landing Site Navigator</div>
       <h1 id="intro-h1">Your lander is ready. The launch slips three days. <em>Does the mission still work?</em></h1>
       <p id="intro-p">At the Moon's south pole the Sun never rises more than 2° above the horizon. One distant ridge can hide it, and your power goes with it. LUNAR//SHIFT uses NASA terrain and JPL positions to show which landing dates still work, and how many days of delay each one survives.</p>
@@ -86,7 +87,7 @@
         <li><b>Decide.</b> Set what your mission needs and read the light: go, marginal or no-go.</li>
       </ol>
       <div class="intro-actions">
-        <button class="primary" id="tour-start">Show me in 30 seconds</button>
+        <button class="primary" id="tour-start">Show me in 20 seconds</button>
         <button class="ghost" id="intro-skip">Explore on my own</button>
       </div>
     </div>

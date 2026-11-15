@@ -185,3 +185,6 @@ ul.plain li{max-width:60ch}
   .wrap{padding:0 16px}
 }
 @media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} .light i{transition:none} .intro-card>*{animation:none;opacity:1;transform:none} .flash{animation:none} }
+
+.intro-lang{margin-bottom:20px}
+.intro-lang button{padding:9px 16px;font-size:14.5px}

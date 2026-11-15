@@ -361,22 +361,43 @@
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     renderer.shadowMap.enabled = true; renderer.shadowMap.type = T.PCFSoftShadowMap;
     var scene = new T.Scene(); scene.background = new T.Color(0x05070b);
-    var camera = new T.PerspectiveCamera(38, 2, 20, 400000);
+    var camera = new T.PerspectiveCamera(38, 2, 20, 3000000);
+    var R_MOON = 1737400, polar = site.polar || null;
+    function drop(east, north) { return polar ? (east * east + north * north) / (2 * R_MOON) : 0; }   // how far the round Moon falls away
     var terr = site.terrain, size = terr.size, half = terr.half_m, H = terr.heights_m, ground0 = site.points[0].ground_m;
-    function W(east, up, north) { return new T.Vector3(east, up, -north); }     // x east, y up, z south
+    function W(east, up, north) { return new T.Vector3(east, up - drop(east, north), -north); }     // x east, y up, z south
+    function V(east, up, north) { return new T.Vector3(east, up, -north); }                      // an offset, no curvature
 
     // terrain: the real elevation grid, true scale
     var geo = new T.PlaneGeometry(2 * half, 2 * half, size - 1, size - 1); geo.rotateX(-Math.PI / 2);
     var pos = geo.attributes.position, iy, ix, lowest = Infinity;
-    for (iy = 0; iy < size; iy++) for (ix = 0; ix < size; ix++) { var hh = H[(size - 1 - iy) * size + ix] - ground0; pos.setY(iy * size + ix, hh); if (hh < lowest) lowest = hh; }
+    for (iy = 0; iy < size; iy++) for (ix = 0; ix < size; ix++) {
+      var hh = H[(size - 1 - iy) * size + ix] - ground0 - drop((ix - (size - 1) / 2) * terr.step_m, ((size - 1) / 2 - iy) * terr.step_m);
+      pos.setY(iy * size + ix, hh); if (hh < lowest) lowest = hh;
+    }
     geo.computeVertexNormals();
     var colours = new Float32Array(size * size * 3);
     geo.setAttribute('color', new T.BufferAttribute(colours, 3));
     var ground = new T.Mesh(geo, new T.MeshStandardMaterial({ color: 0xffffff, vertexColors: true, roughness: 1, metalness: 0 }));
     ground.castShadow = true; ground.receiveShadow = true; scene.add(ground);
 
-    // sides and base, so the terrain reads as a solid block of the Moon and not a sheet
-    (function () {
+    // the wide landscape: real terrain out to 200 km, bent to the Moon's curvature
+    if (polar) (function () {
+      var ps = polar.size, ph = polar.half_m, PH = polar.heights_m, g = new T.PlaneGeometry(2 * ph, 2 * ph, ps - 1, ps - 1); g.rotateX(-Math.PI / 2);
+      var pp = g.attributes.position, inner = half - polar.step_m;
+      for (var jy = 0; jy < ps; jy++) for (var jx = 0; jx < ps; jx++) {
+        var e = (jx - (ps - 1) / 2) * polar.step_m, n = ((ps - 1) / 2 - jy) * polar.step_m;
+        var y = PH[(ps - 1 - jy) * ps + jx] - ground0 - drop(e, n);
+        if (Math.abs(e) < inner && Math.abs(n) < inner) y -= 500;        // tuck it under the detailed tile
+        pp.setY(jy * ps + jx, y);
+      }
+      g.computeVertexNormals();
+      var wide = new T.Mesh(g, new T.MeshStandardMaterial({ color: 0x9c9992, roughness: 1, metalness: 0 }));
+      wide.castShadow = true; wide.receiveShadow = true; scene.add(wide);
+    })();
+
+    // sides and base, so the terrain reads as a solid block when there is no wide landscape
+    if (!polar) (function () {
       var base = lowest - 900, v = [], idx = [], n = 0;
       function edge(getIx, getIy) {
         for (var k = 0; k < size; k++) {
@@ -400,24 +421,25 @@
     var hemi = new T.HemisphereLight(0xe8eeff, 0x2c3038, 0.62); scene.add(hemi);
     var survey = new T.DirectionalLight(0xffffff, 1.25); survey.position.set(-0.72, 0.40, -0.56).multiplyScalar(40000); scene.add(survey);
     var sunLight = new T.DirectionalLight(0xfff0d2, 2.6); sunLight.castShadow = true;
-    var sc = sunLight.shadow.camera; sc.left = -18000; sc.right = 18000; sc.top = 18000; sc.bottom = -18000; sc.near = 1000; sc.far = 90000;
-    sunLight.shadow.mapSize.set(4096, 4096); sunLight.shadow.bias = -0.0004; sunLight.shadow.normalBias = 14;
+    var SH = polar ? 46000 : 18000, SD = polar ? 160000 : 45000;
+    var sc = sunLight.shadow.camera; sc.left = -SH; sc.right = SH; sc.top = SH; sc.bottom = -SH; sc.near = 1000; sc.far = SD * 2;
+    sunLight.shadow.mapSize.set(4096, 4096); sunLight.shadow.bias = -0.0004; sunLight.shadow.normalBias = polar ? 34 : 14;
     scene.add(sunLight); scene.add(sunLight.target);
 
     var sg = new T.BufferGeometry(), sp = [], rnd = 7;
     function rand() { rnd = (rnd * 16807) % 2147483647; return rnd / 2147483647; }
-    for (var i = 0; i < 1400; i++) { var u1 = rand() * 2 - 1, th = rand() * 6.283, r = Math.sqrt(1 - u1 * u1); sp.push(r * Math.cos(th) * 300000, u1 * 300000, r * Math.sin(th) * 300000); }
+    for (var i = 0; i < 1400; i++) { var u1 = rand() * 2 - 1, th = rand() * 6.283, r = Math.sqrt(1 - u1 * u1); sp.push(r * Math.cos(th) * 2000000, u1 * 2000000, r * Math.sin(th) * 2000000); }
     sg.setAttribute('position', new T.Float32BufferAttribute(sp, 3));
     scene.add(new T.Points(sg, new T.PointsMaterial({ color: 0xcfd8e6, size: 1.4, sizeAttenuation: false, transparent: true, opacity: 0.8 })));
 
     // skyline ring: the computed terrain horizon, shown only when standing at the site
-    var RR = 21000, RS = 30000, ring = new T.Group(); ring.visible = false; scene.add(ring);
+    var RR = polar ? 330000 : 21000, RS = polar ? 420000 : 30000, ring = new T.Group(); ring.visible = false; scene.add(ring);
     function buildRing() {
       while (ring.children.length) { var o = ring.children.pop(); o.geometry.dispose(); }
       var p = st.pt, n = p.horizon_deg.length, v = [], idx = [], line = [];
       for (var k = 0; k <= n; k++) {
         var az = (k % n) * 360 / n * Math.PI / 180, x = Math.sin(az) * RR, z = -Math.cos(az) * RR, yTop = Math.tan(p.horizon_deg[k % n] * Math.PI / 180) * RR;
-        v.push(x, -9000, z, x, yTop, z); line.push(x, yTop, z);
+        v.push(x, -RR * 0.45, z, x, yTop, z); line.push(x, yTop, z);
         if (k < n) { var a = k * 2; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
       }
       var g = new T.BufferGeometry(); g.setAttribute('position', new T.Float32BufferAttribute(v, 3)); g.setIndex(idx);
@@ -448,9 +470,9 @@
     halo.rotation.x = -Math.PI / 2; scene.add(halo);
 
     var controls = new T.OrbitControls(camera, canvas);
-    controls.enableDamping = true; controls.dampingFactor = 0.08; controls.minDistance = 600; controls.maxDistance = 70000;
+    controls.enableDamping = true; controls.dampingFactor = 0.08; controls.minDistance = 600; controls.maxDistance = polar ? 600000 : 70000;
     controls.maxPolarAngle = Math.PI * 0.497; controls.autoRotate = !reduceMotion; controls.autoRotateSpeed = 0.35;
-    var HOME = W(-6400, 3900, -9800), FAR = W(-21000, 19000, -33000);
+    var HOME = V(-6400, 3900, -9800), FAR = polar ? V(-150000, 210000, -250000) : V(-21000, 19000, -33000);
     canvas.addEventListener('pointerdown', function () { controls.autoRotate = false; fly = null; });
 
     var eye = new T.Vector3(), look = { yaw: 0, pitch: 1.2, free: false }, drag = null, fly = null;
@@ -497,7 +519,7 @@
     function applyLight() {
       var real = st.light === 'real' || st.cam === 'stand';
       sunLight.intensity = real ? 2.6 : 0; sunLight.castShadow = real;
-      ambient.intensity = real ? (st.cam === 'stand' ? 0.6 : 0.42) : 0; hemi.intensity = real ? 0 : 0.62; survey.intensity = real ? 0 : 1.25;
+      ambient.intensity = real ? (st.cam === 'stand' ? 0.6 : (polar ? 0.8 : 0.42)) : 0; hemi.intensity = real ? 0 : 0.62; survey.intensity = real ? 0 : 1.25;
     }
     function note() { $('scene-note').textContent = st.cam === 'stand' ? t('note_stand') : (st.light === 'real' ? t('note_real') : t('note_survey')); }
     function setLight(mode) { st.light = mode; applyLight(); note(); }
@@ -507,17 +529,18 @@
       var p = st.pt; eye.copy(W(p.east_m, p.ground_m - ground0 + p.mast_m, p.north_m));
       ring.position.copy(eye); buildRing();
       beam.position.copy(eye).add(new T.Vector3(0, 700, 0)); halo.position.copy(eye).add(new T.Vector3(0, 6, 0));
+      sunLight.target.position.copy(eye);
       controls.target.copy(eye);
     }
     function setTime() {
       var sAz = sample(E.sun_az, st.hour, true), sEl = sample(E.sun_el, st.hour), eAz = sample(E.earth_az, st.hour, true), eEl = sample(E.earth_el, st.hour);
       var sd = dirOf(sAz, sEl), big = st.cam === 'orbit';
-      sunLight.position.copy(sd).multiplyScalar(45000); sunLight.target.position.set(0, 0, 0);
+      sunLight.position.copy(eye).addScaledVector(sd, SD);
       sunSprite.position.copy(eye).addScaledVector(sd, RS);
-      var sDia = 2 * Math.tan(SUN_R * Math.PI / 180) * RS * 2 * (big ? 7 : 1);      // the texture's disc fills half of the sprite
+      var sDia = 2 * Math.tan(SUN_R * Math.PI / 180) * RS * 2 * (big ? 5 : 1);      // the texture's disc fills half of the sprite
       sunSprite.scale.set(sDia, sDia, 1);
       earthSprite.position.copy(eye).addScaledVector(dirOf(eAz, eEl), RS);
-      var eDia = 2 * Math.tan(EARTH_R * Math.PI / 180) * RS * 1.07 * (big ? 2.2 : 1);
+      var eDia = 2 * Math.tan(EARTH_R * Math.PI / 180) * RS * 1.07 * (big ? 1.8 : 1);
       earthSprite.scale.set(eDia, eDia, 1);
       if (st.cam === 'stand' && !look.free) look.yaw = sAz;
     }
@@ -530,18 +553,22 @@
       $('cam-orbit').setAttribute('aria-pressed', String(mode === 'orbit')); $('cam-stand').setAttribute('aria-pressed', String(mode === 'stand'));
       applyLight(); note(); setTime();
     }
-    function flyIn() {                                 // opening move: come down from high above to the working view
-      if (reduceMotion) { camera.position.copy(eye).add(HOME); return; }
-      fly = { t0: performance.now(), dur: 3600 };
+    function flyIn(done) {                             // opening move: dive from high above the pole down to the site
+      if (reduceMotion) { camera.position.copy(eye).add(HOME); if (done) done(); return; }
+      fly = { u: 0, dur: polar ? 6500 : 3600, done: done || null };
     }
     function spin(on) { controls.autoRotate = on && !reduceMotion; }
     function setVerdict(c) { var col = c === 'go' ? 0x3ecf7a : c === 'hold' ? 0xf2c230 : c === 'no' ? 0xe5484d : 0x93a0b2; beamMat.color.setHex(col); halo.material.color.setHex(col); }
     function resize() { var w = hero.clientWidth, h = hero.clientHeight; renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix(); }
+    var lastRender = 0;
     function render(now) {
+      var step = Math.min(120, lastRender ? now - lastRender : 16); lastRender = now;   // a slow frame must not skip the dive
       if (st.cam === 'orbit') {
         if (fly) {
-          var u = Math.min(1, (now - fly.t0) / fly.dur), e = 1 - Math.pow(1 - u, 3);
-          camera.position.copy(eye).add(FAR.clone().lerp(HOME, e)); if (u >= 1) fly = null;
+          fly.u = Math.min(1, fly.u + step / fly.dur);
+          var u = fly.u, e = u * u * (3 - 2 * u);
+          var k = Math.pow(e, 0.55);                               // most of the distance early, a slow arrival
+          camera.position.copy(eye).add(FAR.clone().lerp(HOME, k)); if (u >= 1) { var cb = fly.done; fly = null; if (cb) cb(); }
         }
         controls.update();
       } else { camera.position.copy(eye); camera.lookAt(eye.clone().add(dirOf(look.yaw, look.pitch))); }
@@ -549,6 +576,7 @@
     }
     window.addEventListener('resize', resize);
     resize(); setPoint(); camera.position.copy(eye).add(reduceMotion ? HOME : FAR); setTime(); setLayer(st.layer); applyLight(); note();
+    canvas.addEventListener('wheel', function () { fly = null; }, { passive: true });
     return { render: render, setTime: setTime, setPoint: setPoint, setCam: setCam, setVerdict: setVerdict, setLayer: setLayer, setLight: setLight, flyIn: flyIn, spin: spin, note: note };
   }
 
@@ -577,11 +605,9 @@
   /* ------------------------------------------------------------ opening screen and tour */
   var tour = { i: -1, timer: null };
   var STEPS = [
-    { ms: 6500, run: function () { scene3d.setCam('orbit'); setLightUI('survey'); setLayerUI('plain'); setPlaying(false); scene3d.spin(true); scene3d.flyIn(); } },
-    { ms: 7000, run: function () { setLayerUI(site.map ? 'crew_go' : 'plain'); } },
-    { ms: 9000, run: function () { setLightUI('real'); setSpeed(120); setPlaying(true); } },
-    { ms: 10500, run: function () { setLayerUI('plain'); st.hour = st.day * 24; scene3d.setCam('stand'); setSpeed(24); setPlaying(true); redraw2D(); } },
-    { ms: 6500, run: function () { scene3d.setCam('orbit'); setLightUI('survey'); setLayerUI(site.map ? 'crew_go' : 'plain'); setPlaying(false); setSpeed(24); st.hour = st.day * 24; redraw2D(); } }
+    { ms: 7000, run: function () { scene3d.setCam('orbit'); setLightUI('real'); setLayerUI('plain'); setPlaying(false); st.hour = st.day * 24; redraw2D(); scene3d.spin(true); scene3d.flyIn(); } },
+    { ms: 6000, run: function () { setLightUI('survey'); setLayerUI(site.map ? 'crew_go' : 'plain'); } },
+    { ms: 7000, run: function () { setLayerUI('plain'); st.hour = st.day * 24; scene3d.setCam('stand'); setSpeed(24); setPlaying(true); redraw2D(); } }
   ];
   function closeIntro() { $('intro').classList.add('out'); }
   function tourStep(i) {
@@ -617,6 +643,10 @@
   setupMiss();
   setPointById(st.pt.id);
   setLang(lang);
+  if (scene3d) {
+    setLightUI('real'); setLayerUI('plain'); scene3d.spin(true);
+    scene3d.flyIn(function () { if (tour.i < 0) { setLightUI('survey'); setLayerUI(site.map ? 'crew_go' : 'plain'); } });
+  }
 
   $('preset-crew').addEventListener('click', function () { setReq(6, 0, 8); refreshVerdictUI(); redraw2D(); });
   $('preset-robot').addEventListener('click', function () { setReq(14, 24, 0); refreshVerdictUI(); redraw2D(); });
@@ -633,8 +663,8 @@
   $('light-real').addEventListener('click', function () { setLightUI('real'); });
   $('tour-start').addEventListener('click', startTour);
   $('help').addEventListener('click', startTour);
-  $('tour-stop').addEventListener('click', function () { endTour(false); });
-  $('intro-skip').addEventListener('click', function () { closeIntro(); if (scene3d) scene3d.flyIn(); });
+  $('tour-stop').addEventListener('click', function () { clearTimeout(tour.timer); tourStep(tour.i + 1); });
+  $('intro-skip').addEventListener('click', function () { closeIntro(); });
 
   var tl = $('timeline'), scrub = false;
   function scrubTo(ev) { var r = tl.getBoundingClientRect(); st.hour = Math.max(0, Math.min(N - 1, (ev.clientX - r.left) / r.width * (N - 1))); redraw2D(); }
