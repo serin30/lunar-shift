@@ -28,6 +28,7 @@ both ─────────────────────► combine.
 both ─────────────────────► scan.py ─────────────► scan_siteNN.json     81 points around the target
 both ─────────────────────► decision_map.py ─────► map_siteNN.json      10,201 points: passing landing dates per spot
 NASA LOLA elevation map ──► export_terrain.py ───► terrain_siteNN.json  terrain for the 3D view
+NASA LOLA elevation map ──► export_polar.py ─────► polar_siteNN.json    wide landscape, out to 200 km
 all of the above ─────────► build_site_data.py ──► web/data/sites.js    the one file the website loads
 ```
 
@@ -79,7 +80,10 @@ python export_terrain.py LDEM_80S_80MPP_ADJ.TIF --lat LAT --lon LON --half-km 12
 # 7. Decision map. Takes about 5 minutes.
 python decision_map.py LDEM_80S_80MPP_ADJ.TIF ephem_site02.csv --lat LAT --lon LON --half-km 8 --step 160 --out map_site02.json
 
-# 8. Rebuild the website data with every site listed.
+# 8. Wide landscape for the 3D view.
+python export_polar.py LDEM_80S_80MPP_ADJ.TIF --lat LAT --lon LON --out polar_site02.json
+
+# 9. Rebuild the website data with every site listed.
 python build_site_data.py --site site01 "Connecting Ridge" --site site02 "Name of the new site"
 ```
 
@@ -97,6 +101,7 @@ All angles are in degrees. Azimuth is 0 at north and 90 at east. Elevation is me
 | `scan_siteNN.json` | `points`: for each of 81 spots `east_m, north_m, dist_m, lat, lon, ground_m, slope_deg, sun_pct, earth_pct, both_pct` |
 | `map_siteNN.json` | A 101 × 101 grid, rows south to north, with `sun_pct, earth_pct, dark_h, crew_go, crew_pass, robot_go, robot_pass` |
 | `terrain_siteNN.json` | A 301 × 301 grid of heights in metres, rows south to north, 80 m apart |
+| `polar_siteNN.json` | A 401 × 401 grid of heights in metres, rows south to north, 1 km apart |
 | `web/data/sites.js` | Everything above for every site, packed for the browser |
 
 ## The pass rule

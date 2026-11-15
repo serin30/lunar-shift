@@ -6,7 +6,7 @@ NASA Space Apps 2026 hackathon; reviewed and run by the team.
 
 For each site id (for example site01) it reads, from the current folder:
     site01.json, timeline_site01.json, scan_site01.json, terrain_site01.json
-    and, if present: site01_best.json + timeline_site01_best.json, map_site01.json
+    and, if present: site01_best.json + timeline_site01_best.json, map_site01.json, polar_site01.json
 and writes everything to web/data/sites.js
 
 Usage (list every site you want on the page, in order):
@@ -56,6 +56,8 @@ def build(sid, name):
     }
     if os.path.exists(f"map_{sid}.json"):
         site["map"] = load(f"map_{sid}.json")
+    if os.path.exists(f"polar_{sid}.json"):
+        site["polar"] = load(f"polar_{sid}.json")
     return site
 
 

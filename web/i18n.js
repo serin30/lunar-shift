@@ -49,11 +49,9 @@
     cmp_cell: function (go, hold) { return go + ' go, ' + hold + ' marginal'; }, not_computed: 'not computed',
     sun: 'Sun', earth: 'Earth', play: 'Play', pause: 'Pause',
     tour: [
-      'This is the real ground near the Moon\'s south pole, built from NASA\'s LOLA elevation map.',
+      'The real south pole of the Moon, from NASA\'s LOLA elevation map. This is how low the Sun really is.',
       'Green: a crew could land there on at least one date in 2027. Grey: never.',
-      'Now the real Sun. It never rises more than 2°, so the shadows of far mountains sweep across the ridge.',
-      'From the ground, eyes 2 m up: the Sun skims the skyline and slips behind it.',
-      'Now set what your mission needs, just below, and read the light.'
+      'From the ground, eyes 2 m up: the Sun skims the skyline, then slips behind it.'
     ]
   };
 
@@ -101,11 +99,9 @@
     cmp_cell: function (go, hold) { return '가능 ' + go + '일, 주의 ' + hold + '일'; }, not_computed: '계산 안 함',
     sun: '태양', earth: '지구', play: '재생', pause: '일시정지',
     tour: [
-      '달 남극 근처의 실제 지형입니다. NASA의 LOLA 고도 지도로 만들었습니다.',
+      'NASA의 LOLA 고도 지도로 만든 실제 달 남극입니다. 태양은 실제로 이만큼 낮게 떠 있습니다.',
       '초록색: 2027년에 유인 착륙이 가능한 날이 하루라도 있는 곳. 회색: 하루도 없는 곳.',
-      '이제 실제 태양입니다. 태양은 2° 넘게 뜨지 않아서, 먼 산의 그림자가 능선을 훑고 지나갑니다.',
-      '지면 2m 높이에서 본 모습입니다. 태양이 지평선을 스치다가 그 뒤로 사라집니다.',
-      '이제 바로 아래에서 임무에 필요한 조건을 정하고 신호등을 읽어 보세요.'
+      '지면 2m 높이에서 본 모습입니다. 태양이 지평선을 스치다가 그 뒤로 사라집니다.'
     ]
   };
 
@@ -121,12 +117,12 @@
     ['#light-survey', '탐사 조명'], ['#light-real', '실제 태양'],
     ['.tl-legend span:nth-child(1)', '<i class="sw sun"></i>햇빛'], ['.tl-legend span:nth-child(2)', '<i class="sw earth"></i>지구 가시'], ['.tl-legend span:nth-child(3)', '<i class="sw win"></i>임무 체류 기간'],
     ['[data-speed="6"]', '6시간/초'], ['[data-speed="24"]', '1일/초'], ['[data-speed="120"]', '5일/초'],
-    ['#tour-stop', '건너뛰기'],
+    ['#tour-stop', '다음'],
     ['#intro-eyebrow', 'NASA Space Apps Challenge 2026 · Lunar Landing Site Navigator'],
     ['#intro-h1', '착륙선은 준비됐습니다. 발사가 3일 밀렸습니다. <em>임무는 여전히 가능할까요?</em>'],
     ['#intro-p', '달 남극에서는 태양이 지평선 위로 2° 넘게 뜨지 않습니다. 멀리 있는 능선 하나가 태양을 가리면 전력도 함께 사라집니다. LUNAR//SHIFT는 NASA 지형 데이터와 JPL 천체 위치로 어떤 착륙일이 여전히 가능한지, 그리고 며칠의 지연까지 버티는지 보여 줍니다.'],
     ['#intro-steps', '<li><b>보기.</b> 유인 착륙이 가능한 곳을 칠한 실제 능선.</li><li><b>재생.</b> 2027년 동안 태양과 지구가 지평선을 도는 모습.</li><li><b>결정.</b> 임무 조건을 정하고 신호등을 읽기: 가능, 주의, 불가.</li>'],
-    ['#tour-start', '30초로 보기'], ['#intro-skip', '직접 둘러보기'],
+    ['#tour-start', '20초로 보기'], ['#intro-skip', '직접 둘러보기'],
     ['#verdict h2', '임무는 여전히 가능한가?'], ['#verdict .lead', '임무에 필요한 조건을 정하고 착륙일을 고르세요. 답은 퍼센트가 아니라 신호등입니다.'],
     ['#preset-crew', '유인, 6일'], ['#preset-robot', '로봇, 14일'],
     ['label[for="in-stay"] span', '표면 체류 기간'], ['label[for="in-dark"] span', '견딜 수 있는 가장 긴 어둠'], ['label[for="in-earth"] span', '하루에 필요한 지구 통신 시간'],
