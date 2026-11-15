@@ -11,7 +11,7 @@
 </head>
 <body>
 
-<header class="hero" id="hero">
+<header class="hero intro-on" id="hero">
   <canvas id="scene" aria-label="3D view of the real terrain around the landing site, with the Sun and Earth at the selected time"></canvas>
 
   <div class="hud hud-top">
@@ -68,6 +68,7 @@
       <div class="row small"><span class="k">Set by terrain</span><span class="v" id="r-dist">—</span></div>
       <div class="row small"><span class="k">Sun</span><span class="v" id="r-sunnext">—</span></div>
       <div class="row small"><span class="k">Earth</span><span class="v" id="r-earthnext">—</span></div>
+      <button class="more" id="readout-more" aria-expanded="false">More detail</button>
     </div>
   </div>
 
@@ -80,12 +81,7 @@
       <div class="seg intro-lang" role="group" aria-label="Language"><button data-lang="en" aria-pressed="true">English</button><button data-lang="ko" aria-pressed="false" lang="ko">한국어</button></div>
       <div class="eyebrow" id="intro-eyebrow">NASA Space Apps Challenge 2026 · Lunar Landing Site Navigator</div>
       <h1 id="intro-h1">Your lander is ready. The launch slips three days. <em>Does the mission still work?</em></h1>
-      <p id="intro-p">At the Moon's south pole the Sun never rises more than 2° above the horizon. One distant ridge can hide it, and your power goes with it. LUNAR//SHIFT uses NASA terrain and JPL positions to show which landing dates still work, and how many days of delay each one survives.</p>
-      <ol id="intro-steps">
-        <li><b>Look.</b> The real ridge, painted with where a crew can land.</li>
-        <li><b>Play.</b> Watch the Sun and Earth circle the skyline through 2027.</li>
-        <li><b>Decide.</b> Set what your mission needs and read the light: go, marginal or no-go.</li>
-      </ol>
+      <p id="intro-p">At the Moon's south pole the Sun sits within 2° of the horizon, so one distant ridge can switch off a lander's power. This tool uses NASA terrain data to show which landing dates still work.</p>
       <div class="intro-actions">
         <button class="primary" id="tour-start">Show me in 20 seconds</button>
         <button class="ghost" id="intro-skip">Explore on my own</button>

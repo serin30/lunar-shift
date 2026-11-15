@@ -86,7 +86,7 @@ button{cursor:pointer}
 .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--sun);margin-bottom:16px}
 .intro h1{font-family:var(--display);font-weight:700;font-size:clamp(26px,3.9vw,46px);line-height:1.12;margin:0 0 18px;text-wrap:balance;letter-spacing:-.015em}
 .intro h1 em{font-style:normal;color:var(--sun);display:block;margin-top:6px}
-.intro p{color:#c3ccd8;max-width:56ch;margin-bottom:16px}
+.intro p{color:#c3ccd8;max-width:50ch;margin-bottom:26px;font-size:17px}
 .intro ol{margin:0 0 24px;padding-left:20px;display:grid;gap:6px;color:#c3ccd8}
 .intro ol b{color:var(--ink)}
 .intro-actions{display:flex;gap:10px;flex-wrap:wrap}
@@ -99,6 +99,11 @@ button{cursor:pointer}
 .caption[hidden]{display:none}
 .caption button{flex:none;border:1px solid var(--line);background:transparent;border-radius:7px;padding:5px 10px;color:var(--muted);font-size:12.5px}
 .touring .hud-left,.touring .hud-right,.touring .hud-note{opacity:0;pointer-events:none}
+.intro-on .hud-left,.intro-on .hud-right,.intro-on .hud-note,.intro-on .hud-bottom,.intro-on .controls{opacity:0;pointer-events:none}
+.hud-bottom,.controls{transition:opacity .4s ease}
+.readout:not(.open) .row.small{display:none}
+.readout .more{margin-top:6px;background:none;border:0;padding:4px 0;color:var(--muted);font:inherit;font-size:12.5px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.readout .more:hover{color:var(--ink)}
 .hud-left,.hud-right,.hud-note{transition:opacity .4s ease}
 .flash{animation:flash 1.6s ease 2}
 @keyframes flash{50%{box-shadow:0 0 0 3px var(--sun)}}
@@ -170,7 +175,7 @@ ul.plain li{max-width:60ch}
   .two{grid-template-columns:minmax(0,1fr);gap:26px}
   .hud-left{position:absolute;top:auto;bottom:212px;left:12px;right:12px;width:auto}
   .sitecard{display:none}
-  .readout .row.small{display:none}
+  .readout .row.small{display:none} .readout .more{display:none}
   .hud-note{display:none}
   .hud-right{position:absolute;top:214px;left:12px;right:12px;width:auto;padding:9px}
   .hud-right .k,.legendbar .cap{display:none}

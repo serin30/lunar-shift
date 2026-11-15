@@ -609,7 +609,7 @@
     { ms: 6000, run: function () { setLightUI('survey'); setLayerUI(site.map ? 'crew_go' : 'plain'); } },
     { ms: 7000, run: function () { setLayerUI('plain'); st.hour = st.day * 24; scene3d.setCam('stand'); setSpeed(24); setPlaying(true); redraw2D(); } }
   ];
-  function closeIntro() { $('intro').classList.add('out'); }
+  function closeIntro() { $('intro').classList.add('out'); $('hero').classList.remove('intro-on'); }
   function tourStep(i) {
     if (i >= STEPS.length) { endTour(true); return; }
     tour.i = i; STEPS[i].run();
@@ -665,6 +665,7 @@
   $('help').addEventListener('click', startTour);
   $('tour-stop').addEventListener('click', function () { clearTimeout(tour.timer); tourStep(tour.i + 1); });
   $('intro-skip').addEventListener('click', function () { closeIntro(); });
+  $('readout-more').addEventListener('click', function () { var open = document.querySelector('.readout').classList.toggle('open'); $('readout-more').setAttribute('aria-expanded', String(open)); });
 
   var tl = $('timeline'), scrub = false;
   function scrubTo(ev) { var r = tl.getBoundingClientRect(); st.hour = Math.max(0, Math.min(N - 1, (ev.clientX - r.left) / r.width * (N - 1))); redraw2D(); }
