@@ -152,3 +152,11 @@ We are not affiliated with or endorsed by NASA.
 ## Use of AI tools
 
 Parts of the code were drafted with an AI coding assistant and then run, tested and reviewed by the team. See `AI_USAGE.md` for the list.
+
+## Sites computed
+
+- site01 Connecting Ridge (89.4632 S, 222.51 E)
+- site02 Nobile Rim 1 (85.5456 S, 37.5572 E)
+- site03 Mons Malapert (85.9919 S, 2.0564 E)
+
+Coordinates for sites 2 and 3 come from the dataset of Wueller et al. (2026, JGR Planets). These two sites are about 135 km from the pole and our elevation map ends at 80 S, so terrain far to their north is missing from the skyline search and their sunlight may read slightly high.
