@@ -89,6 +89,8 @@ python export_polar.py LDEM_80S_80MPP_ADJ.TIF --lat LAT --lon LON --out polar_si
 python build_site_data.py --site site01 "Connecting Ridge" --site site02 "Name of the new site"
 ```
 
+Or run every step with one command: `python add_site.py site05 LAT LON` (add the site's name to `NAMES` in that file first).
+
 Then open `web/index.html`. A comparison table appears as soon as there are two sites.
 
 ## Data files
@@ -199,5 +201,6 @@ Most of the code and the wording were drafted with an AI assistant (Claude) and 
 - site01 Connecting Ridge (89.4632 S, 222.51 E)
 - site02 Nobile Rim 1 (85.5456 S, 37.5572 E)
 - site03 Mons Malapert (85.9919 S, 2.0564 E)
+- site04 IM-2 landing spot on Mons Mouton (84.7906 S, 29.1957 E), where the Athena lander came down in March 2025. It lies outside NASA's 85 S average sunlight maps, so it is not part of the comparison above. Athena ended in a crater about 20 m wide, smaller than one pixel of our map, so this site shows what the area offers, not that crater.
 
 Coordinates for sites 2 and 3 come from the dataset of Wueller et al. (2026, JGR Planets). These two sites are about 135 km from the pole and our elevation map ends at 80 S, so terrain far to their north is missing from the skyline search and their sunlight may read slightly high.

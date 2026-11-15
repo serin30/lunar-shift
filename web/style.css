@@ -134,6 +134,8 @@ input[type=range]{width:100%;accent-color:var(--sun);height:28px}
 .verdict-card.go .vlabel{color:var(--go)} .verdict-card.hold .vlabel{color:var(--hold)} .verdict-card.no .vlabel{color:var(--no)}
 .vdate{font-family:var(--mono);color:var(--muted);font-size:14px;margin-top:4px}
 .vwhy{margin:12px 0 14px;max-width:46ch}
+.proof-table-x{} #proof-table:not(.open) tr.extra{display:none}
+#proof-more{margin-top:12px}
 .vmean{font-size:15.5px;font-weight:500;margin:2px 0 6px;max-width:44ch}
 .vslip{display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding:8px 0}
 .vslip .k{flex:1 1 46%}.vslip .v{text-align:right;flex:1 1 54%}

@@ -339,6 +339,7 @@
     ];
     $('miss-stats').innerHTML = stats.map(function (s) { return '<div class="stat"><div class="n">' + s[0] + '</div><div class="k">' + s[1] + '</div></div>'; }).join('');
     $('proof-best-v').textContent = t('proof_best', bestPt.sun_pct, Math.round(bestPt.dist_m));
+    if (site !== SITES[Object.keys(SITES)[0]]) $('proof-best').hidden = true;      // that published value is for Connecting Ridge only
   }
   function setupMiss() {
     var cv = $('missmap'), tip = $('miss-tip');
@@ -723,6 +724,7 @@
   $('tour-stop').addEventListener('click', function () { clearTimeout(tour.timer); tourStep(tour.i + 1); });
   $('intro-skip').addEventListener('click', function () { closeIntro(); });
   $('ribbon').addEventListener('click', function (ev) { var b = ev.target.closest('button'); if (!b || b.disabled) return; st.day = +b.dataset.day; st.hour = st.day * 24; refreshVerdictUI(); redraw2D(); });
+  $('proof-more').addEventListener('click', function () { $('proof-table').classList.add('open'); $('proof-more').hidden = true; });
   $('pick-close').addEventListener('click', function () { st.pick = null; renderPick(); if (scene3d) scene3d.clearPick(); });
   $('readout-more').addEventListener('click', function () { var open = document.querySelector('.readout').classList.toggle('open'); $('readout-more').setAttribute('aria-expanded', String(open)); });
 

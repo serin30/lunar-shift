@@ -151,7 +151,7 @@
         <div class="vslip"><span class="k" id="k-count">Landing dates that pass in 2027</span><span class="v" id="v-count">—</span></div>
         <div class="vslip"><span class="k" id="k-batt">Battery to get through the longest dark stretch</span><span class="v" id="v-batt">—</span></div>
         <div class="vslip"><span class="k" id="k-panel">Solar panel to power the whole stay</span><span class="v" id="v-panel">—</span></div>
-        <p class="fine" id="fine-power">Rough sizing, not a design. Battery: the power draw times the longest dark stretch of this stay on the careful estimate, at 150 Wh per kg. Panel: large enough to supply the whole stay from its hours of sunlight, turned to face the Sun, with sunlight at 1,361 W per m² and 28% cell efficiency. Losses, heaters and safety margins are left out. The preset power values (3,000 W crew, 300 W robot) are examples, not real mission figures.</p>
+        <p class="fine" id="fine-power">Rough sizing, not a design: a 150 Wh per kg battery and a 28% efficient panel facing the Sun, with no losses or margins. The preset power values are examples.</p>
       </div>
     </div>
   </div>
@@ -167,7 +167,7 @@
       </div>
     </div>
     <div class="cal" id="cal" role="grid" aria-label="Landing date calendar"></div>
-    <p class="fine" id="fine-cal">We judge every date twice. The careful estimate counts sunlight only when more than half of the Sun's disc is above the terrain, and counts Earth only when it clears the terrain by 0.5°. The generous estimate accepts a tenth of the Sun, and Earth just above the terrain. Green passes both. Yellow passes only the generous one. Red passes neither.</p>
+    <p class="fine" id="fine-cal">Every date is judged twice, on a careful and a generous estimate of the light. Green passes both, yellow passes only the generous one, red passes neither. The exact rule is in the README.</p>
   </div>
 </section>
 
@@ -182,7 +182,7 @@
 <section class="band" id="horizon">
   <div class="wrap">
     <h2>The skyline decides everything</h2>
-    <p class="lead">At the south pole the Sun never climbs more than about 2° and Earth stays under about 7°. This is the terrain outline all the way around the site, with both of them drawn where they are right now.</p>
+    <p class="lead">Near the south pole the Sun and Earth stay within a few degrees of the horizon all year. This is the terrain outline all the way around the site, with both of them drawn where they are right now.</p>
     <div class="seg small" role="group" aria-label="Horizon view">
       <button id="strip-full" aria-pressed="true">Full circle</button>
       <button id="strip-zoom" aria-pressed="false">Zoom on the Sun</button>
@@ -214,20 +214,21 @@
       <table id="proof-table">
         <thead><tr><th>Check</th><th>Result</th><th>Expected</th></tr></thead>
         <tbody>
-          <tr><td>Smooth Moon, eye 2 m up: how far the horizon dips</td><td>−0.0871°</td><td>−0.0869° (geometry)</td></tr>
-          <tr><td>Smooth Moon, eye 100 m up</td><td>−0.6147°</td><td>−0.6147° (geometry)</td></tr>
-          <tr><td>A 3 km wall placed 50 km away</td><td>2.549° to 2.599°</td><td>2.520° to 2.604° (geometry, within map pixel size)</td></tr>
-          <tr><td>Mountains placed due north and due east</td><td>found at 0.0° and 90.0°</td><td>0° and 90°</td></tr>
-          <tr><td>Sun's centre exactly on the terrain line</td><td>50% of the disc visible</td><td>50%</td></tr>
-          <tr><td>Our map projection against the NASA file's own definition</td><td>0.00 m difference</td><td>less than one 80 m pixel</td></tr>
-          <tr><td>Sun's yearly height range at the site, from JPL Horizons</td><td>−2.06° to +2.05°</td><td>about ±2.1° at this latitude</td></tr>
-          <tr><td>Pass or fail rule written twice, in Python and in JavaScript, on the same target data</td><td>10 go, 16 passing dates in both</td><td>identical counts</td></tr>
-          <tr id="proof-best"><td>Best-lit point near the target, sunlight over 2027</td><td id="proof-best-v">—</td><td>NASA studies report roughly 70% or more for the best spots on this ridge</td></tr>
-          <tr><td>Sunlight over 2027 at our three targets, against NASA's own LOLA average sunlight map</td><td>46% / 79% / 77%</td><td>44% / 77% / 64%. NASA's map averages 18.6 years on 60 m pixels, ours is 2027 only, so sites 2 and 3 should be read as upper bounds</td></tr>
+          <tr><td>Sunlight over 2027 at our first three targets, against NASA's own LOLA average sunlight map</td><td>46% / 79% / 77%</td><td>44% / 77% / 64%. NASA's map averages 18.6 years on 60 m pixels, ours is 2027 only, so sites 2 and 3 should be read as upper bounds</td></tr>
           <tr><td>Earth in view at the same three targets, against NASA's Earth visibility map</td><td>40% / 62% / 67%</td><td>39% / 67% / 71%. NASA counts any part of Earth's disc, we count its centre, so we should read lower</td></tr>
+          <tr class="extra"><td>Smooth Moon, eye 2 m up: how far the horizon dips</td><td>−0.0871°</td><td>−0.0869° (geometry)</td></tr>
+          <tr class="extra"><td>Smooth Moon, eye 100 m up</td><td>−0.6147°</td><td>−0.6147° (geometry)</td></tr>
+          <tr class="extra"><td>A 3 km wall placed 50 km away</td><td>2.549° to 2.599°</td><td>2.520° to 2.604° (geometry, within map pixel size)</td></tr>
+          <tr class="extra"><td>Mountains placed due north and due east</td><td>found at 0.0° and 90.0°</td><td>0° and 90°</td></tr>
+          <tr class="extra"><td>Sun's centre exactly on the terrain line</td><td>50% of the disc visible</td><td>50%</td></tr>
+          <tr class="extra"><td>Our map projection against the NASA file's own definition</td><td>0.00 m difference</td><td>less than one 80 m pixel</td></tr>
+          <tr class="extra"><td>Sun's yearly height range at Connecting Ridge, from JPL Horizons</td><td>−2.06° to +2.05°</td><td>about ±2.1° at this latitude</td></tr>
+          <tr class="extra"><td>Pass or fail rule written twice, in Python and in JavaScript, on the same target data</td><td>10 go, 16 passing dates in both</td><td>identical counts</td></tr>
+          <tr class="extra" id="proof-best"><td>Best-lit point near the target, sunlight over 2027</td><td id="proof-best-v">—</td><td>NASA studies report roughly 70% or more for the best spots on this ridge</td></tr>
         </tbody>
       </table>
     </div>
+    <button class="ghost" id="proof-more" aria-expanded="false">Show all checks</button>
 
     <div class="two cols">
       <div>
