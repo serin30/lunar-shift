@@ -222,6 +222,8 @@
           <tr><td>Sun's yearly height range at the site, from JPL Horizons</td><td>−2.06° to +2.05°</td><td>about ±2.1° at this latitude</td></tr>
           <tr><td>Pass or fail rule written twice, in Python and in JavaScript, on the same target data</td><td>10 go, 16 passing dates in both</td><td>identical counts</td></tr>
           <tr id="proof-best"><td>Best-lit point near the target, sunlight over 2027</td><td id="proof-best-v">—</td><td>NASA studies report roughly 70% or more for the best spots on this ridge</td></tr>
+          <tr><td>Sunlight over 2027 at our three targets, against NASA's own LOLA average sunlight map</td><td>46% / 79% / 77%</td><td>44% / 77% / 64%. NASA's map averages 18.6 years on 60 m pixels, ours is 2027 only, so sites 2 and 3 should be read as upper bounds</td></tr>
+          <tr><td>Earth in view at the same three targets, against NASA's Earth visibility map</td><td>40% / 62% / 67%</td><td>39% / 67% / 71%. NASA counts any part of Earth's disc, we count its centre, so we should read lower</td></tr>
         </tbody>
       </table>
     </div>
@@ -243,9 +245,10 @@
         <ul class="plain" id="ul-data">
           <li><b>LOLA elevation map</b> of the south pole, 80 m per pixel (<span class="mono">LDEM_80S_80MPP_ADJ</span>), from NASA Goddard's Planetary Geodesy Data Archive. It gives the terrain horizon and the 3D view.</li>
           <li><b>JPL Horizons</b>, for the direction of the Sun and Earth from the site for every hour of 2027.</li>
+          <li><b>LOLA average sunlight and Earth visibility maps</b> (Mazarico et al. 2011), used only to check our results. The comparison is in the table above and in the README.</li>
         </ul>
         <p class="fine" id="fine-data">Without either one the tool has nothing to compute. We are not affiliated with or endorsed by NASA.</p>
-        <p class="fine" id="fine-ai">Parts of the code were drafted with an AI coding assistant and then run, tested and reviewed by the team. Details are in <span class="mono">AI_USAGE.md</span> in the repository.</p>
+        <p class="fine" id="fine-ai">Most of the code and wording were drafted with an AI assistant (Claude) and then run, tested and reviewed by the team. The idea, the scope and every run on NASA data are ours. Details are in <span class="mono">AI_USAGE.md</span> in the repository.</p>
       </div>
     </div>
   </div>

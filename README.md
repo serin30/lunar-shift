@@ -14,6 +14,8 @@ You enter what a mission needs: how long it stays on the surface, how long a dar
 - how many days of launch delay each date survives,
 - how the answer changes if the lander comes down a few hundred metres off target,
 - where on the surrounding terrain a mission could land at all.
+- what any spot you click on the 3D terrain offers: sunlight, Earth visibility, longest dark stretch and landing dates,
+- roughly how much battery and solar panel the chosen date demands, for a power draw you set.
 
 At the south pole the Sun never rises more than about 2° above the horizon, so a single distant ridge can hide it. Averages hide this. A mission fails in its longest dark gap, not on its average sunlight.
 
@@ -160,6 +162,15 @@ What this shows:
 
 So the three sites are ranked the same way by both sources (site02 and site03 far brighter than site01), and site01 agrees closely in absolute value. For sites 2 and 3, treat our sunlight as an upper bound.
 
+## Power estimate
+
+For the chosen landing date the site turns the result into two rough sizes:
+
+- **Battery** = power draw × longest dark stretch of the stay (cautious reading), at 150 Wh per kg.
+- **Solar panel** = power draw ÷ average visible share of the Sun over the stay ÷ (1,361 W/m² × 28% cell efficiency), for a panel that turns to face the Sun.
+
+Losses, heaters and safety margins are left out. The preset power values (3,000 W crew, 300 W robot) are examples, not real mission figures.
+
 ## What this tool does not see
 
 - **Rocks and small craters.** The elevation map has 80 m pixels.
@@ -181,7 +192,7 @@ We are not affiliated with or endorsed by NASA.
 
 ## Use of AI tools
 
-Parts of the code were drafted with an AI coding assistant and then run, tested and reviewed by the team. See `AI_USAGE.md` for the list.
+Most of the code and the wording were drafted with an AI assistant (Claude) and then run, tested and reviewed by the team. The idea, the scope, the choice of sites and every run on NASA data are ours. The full list is in `AI_USAGE.md`.
 
 ## Sites computed
 
